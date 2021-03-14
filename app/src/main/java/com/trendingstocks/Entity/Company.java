@@ -1,5 +1,9 @@
 package com.trendingstocks.Entity;
 
+import com.trendingstocks.Service.Interface.JsonRequest;
+import com.trendingstocks.Service.JsonRequestImpl;
+
+import java.io.IOException;
 import java.util.Objects;
 
 public class Company {
@@ -9,7 +13,6 @@ public class Company {
     private String ticker;
     private String weburl;
     private String logo;
-
     private Stock stock;
 
     public  Company(String name, String ticker, String currency){
@@ -25,6 +28,11 @@ public class Company {
         this.weburl = weburl;
         this.logo = logo;
         this.stock = stock;
+    }
+
+    public void updateStock() throws IOException {
+        JsonRequest jsonRequest = new JsonRequestImpl();
+        this.stock =  jsonRequest.getStockByTicker(ticker);
     }
 
     @Override

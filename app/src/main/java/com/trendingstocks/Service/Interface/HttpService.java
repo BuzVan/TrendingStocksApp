@@ -31,4 +31,6 @@ public interface HttpService {
     был получен
      */
     public Response getSyncResponse(Request request) throws IOException;
+    
+    
 }

@@ -1,6 +1,7 @@
 package com.trendingstocks;
 
 import com.trendingstocks.Entity.Company;
+import com.trendingstocks.Entity.Stock;
 import com.trendingstocks.Service.JsonRequestImpl;
 
 import org.junit.Assert;
@@ -33,5 +34,13 @@ public class JsonRequestUnitTest {
         for( Company company: companies){
             System.out.println(company);
         }
+    }
+
+    @Test
+    public void CompanyStock_ReturnGoodAnswer() throws Exception {
+        JsonRequestImpl jsonRequest = new JsonRequestImpl();
+        Stock stock = jsonRequest.getStockByTicker("YNDX");
+        Assert.assertNotEquals(null, stock);
+        System.out.println(stock);
     }
 }

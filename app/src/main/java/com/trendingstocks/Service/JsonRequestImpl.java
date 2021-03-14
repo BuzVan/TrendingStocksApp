@@ -5,9 +5,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.trendingstocks.Entity.Company;
+import com.trendingstocks.Entity.Stock;
 import com.trendingstocks.Service.Interface.HttpService;
 import com.trendingstocks.Service.Interface.JsonRequest;
 import com.trendingstocks.Service.JsonEntity.ConstituentArray;
+import com.trendingstocks.Service.JsonEntity.JsonStock;
 import com.trendingstocks.Service.JsonEntity.SearchResult;
 
 import java.io.IOException;
@@ -72,8 +74,10 @@ public class JsonRequestImpl implements JsonRequest {
             throw new IOException("no answer from finnhub");
 
         String json = response.body().string();
+        Company company =  gson.fromJson(json,Company.class);
+        company.setStock(getStockByTicker(company.getTicker()));
 
-        return gson.fromJson(json,Company.class);
+        return company;
     }
 
     @Override
@@ -98,5 +102,28 @@ public class JsonRequestImpl implements JsonRequest {
             answer.add(getCompany(item));
         }
         return  answer;
+    }
+
+    @Override
+    public Stock getStockByTicker(String ticker) throws IOException {
+        HttpService httpService = new HttpServiceImpl();
+        String url = BASE_URL + "quote";
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("symbol", ticker);
+        map.put("token", TOKEN);
+        Request request = httpService.getRequestWithParams(url, map);
+        Response response = httpService.getSyncResponse(request);
+
+
+        if (response.body() == null)
+            throw new IOException("no answer from finnhub");
+
+        Gson gson = new Gson();
+        JsonStock jstock
+                = gson.fromJson(response.body().string(), JsonStock.class);
+
+        Stock stock = new Stock(jstock.pc,jstock.c);
+        return  stock;
     }
 }
