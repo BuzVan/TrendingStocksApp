@@ -1,9 +1,6 @@
 package com.trendingstocks.Service;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.Entity.Stock;
 import com.trendingstocks.Service.Interface.HttpService;
@@ -13,7 +10,6 @@ import com.trendingstocks.Service.JsonEntity.JsonStock;
 import com.trendingstocks.Service.JsonEntity.SearchResult;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +77,7 @@ public class JsonRequestImpl implements JsonRequest {
     }
 
     @Override
-    public List<Company> getStartCompany() throws IOException {
+    public List<String> getStartTickers() throws IOException {
         HttpService httpService = new HttpServiceImpl();
         String url = BASE_URL + "index/constituents";
         Map<String, String> map = new HashMap<String, String>();
@@ -90,18 +86,13 @@ public class JsonRequestImpl implements JsonRequest {
         Request request = httpService.getRequestWithParams(url, map);
         Response response = httpService.getSyncResponse(request);
 
-
         if (response.body() == null)
             throw new IOException("no answer from finnhub");
 
         Gson gson = new Gson();
         ConstituentArray constituentArray
                 = gson.fromJson(response.body().string(), ConstituentArray.class);
-        List<Company> answer = new ArrayList<>();
-        for (String item: constituentArray.constituents) {
-            answer.add(getCompany(item));
-        }
-        return  answer;
+        return  constituentArray.constituents;
     }
 
     @Override

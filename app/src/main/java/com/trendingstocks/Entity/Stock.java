@@ -10,7 +10,10 @@ public class Stock {
     }
 
     public double getPriceChange(){
-        return prevClosePrice - currentPrice;
+        double value = prevClosePrice - currentPrice;
+        double scale = Math.pow(10,2);
+        double result = Math.ceil(value * scale) / scale;
+        return  result;
     }
 
     public  double getPriceChangePercent(){

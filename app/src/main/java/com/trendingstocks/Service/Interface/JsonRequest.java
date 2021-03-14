@@ -28,7 +28,7 @@ public interface JsonRequest {
      * @return получить стартовые компании
      * @throws IOException ошибка, если ответ не получен
      */
-    public  List<Company> getStartCompany() throws  IOException;
+    public  List<String> getStartTickers() throws  IOException;
 
     /**
      * Получить цену акции с API finnhub по тикеру
