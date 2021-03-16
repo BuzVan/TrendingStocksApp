@@ -1,34 +1,23 @@
 package com.trendingstocks.Entity;
 
+import android.graphics.Bitmap;
+
 import com.trendingstocks.Service.Interface.JsonRequest;
 import com.trendingstocks.Service.JsonRequestImpl;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Company {
+public class Company implements Serializable {
     private String name;
     private String country;
     private String currency;
     private String ticker;
     private String weburl;
     private String logo;
-    private Stock stock;
+    private transient Stock stock = new Stock();
 
-    public  Company(String name, String ticker, String currency){
-        this.name = name;
-        this.ticker = ticker;
-        this.currency = currency;
-    }
-    public Company(String name, String country, String currency, String ticker, String weburl, String logo, Stock stock) {
-        this.name = name;
-        this.country = country;
-        this.currency = currency;
-        this.ticker = ticker;
-        this.weburl = weburl;
-        this.logo = logo;
-        this.stock = stock;
-    }
 
     public void updateStock() throws IOException {
         JsonRequest jsonRequest = new JsonRequestImpl();
@@ -110,4 +99,5 @@ public class Company {
     public void setStock(Stock stock) {
         this.stock = stock;
     }
+
 }

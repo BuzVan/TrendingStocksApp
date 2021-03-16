@@ -1,26 +1,23 @@
 package com.trendingstocks.Entity;
 
-public class Stock {
-    private double prevClosePrice;
-    private double currentPrice;
+import org.decimal4j.util.DoubleRounder;
 
+public class Stock {
+    private double prevClosePrice = 0;
+    private double currentPrice = 0;
+
+    public Stock(){}
     public Stock(double prevClosePrice, double currentPrice) {
-        this.prevClosePrice = prevClosePrice;
-        this.currentPrice = currentPrice;
+        this.prevClosePrice = DoubleRounder.round(prevClosePrice,2);
+        this.currentPrice =  DoubleRounder.round(currentPrice,2);
     }
 
     public double getPriceChange(){
-        double value = prevClosePrice - currentPrice;
-        double scale = Math.pow(10,2);
-        double result = Math.ceil(value * scale) / scale;
-        return  result;
+        return  DoubleRounder.round(prevClosePrice - currentPrice, 2);
     }
 
     public  double getPriceChangePercent(){
-        double value = getPriceChange()/prevClosePrice;
-        double scale = Math.pow(10,2);
-        double result = Math.ceil(value * scale) / scale;
-        return  result;
+        return DoubleRounder.round(getPriceChange()/prevClosePrice,2);
     }
 
     @Override
@@ -35,15 +32,8 @@ public class Stock {
         return prevClosePrice;
     }
 
-    public void setPrevClosePrice(double prevClosePrice) {
-        this.prevClosePrice = prevClosePrice;
-    }
-
     public double getCurrentPrice() {
         return currentPrice;
     }
 
-    public void setCurrentPrice(double currentPrice) {
-        this.currentPrice = currentPrice;
-    }
 }

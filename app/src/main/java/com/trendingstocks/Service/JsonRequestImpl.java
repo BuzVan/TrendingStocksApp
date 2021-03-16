@@ -1,6 +1,10 @@
 package com.trendingstocks.Service;
 
+import android.graphics.Bitmap;
+import android.util.Log;
+
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.Entity.Stock;
 import com.trendingstocks.Service.Interface.HttpService;
@@ -72,7 +76,7 @@ public class JsonRequestImpl implements JsonRequest {
         String json = response.body().string();
         Company company =  gson.fromJson(json,Company.class);
         company.setStock(getStockByTicker(company.getTicker()));
-
+        Log.i("JSON_REQUEST", company.toString());
         return company;
     }
 
