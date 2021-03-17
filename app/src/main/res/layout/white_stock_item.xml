@@ -9,6 +9,7 @@
     android:layout_marginBottom="8dp">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
@@ -28,9 +29,9 @@
 
         <TextView
             android:id="@+id/price_change"
+            style="@style/DefaultText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/DefaultText"
             android:text="TextView"
             android:textAlignment="textEnd" />
     </LinearLayout>
@@ -48,26 +49,27 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
         app:layout_constraintStart_toEndOf="@+id/company_image_view"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/ticker_name"
-            android:layout_width="wrap_content"
+            style="@style/CardStockNameText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            style="@style/CardStockNameText" />
+            android:text="TextView" />
 
         <TextView
             android:id="@+id/company_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             style="@style/DefaultText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="TextView" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

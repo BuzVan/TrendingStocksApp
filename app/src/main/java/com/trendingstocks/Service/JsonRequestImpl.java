@@ -1,10 +1,9 @@
 package com.trendingstocks.Service;
 
-import android.graphics.Bitmap;
+import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.Entity.Stock;
 import com.trendingstocks.Service.Interface.HttpService;
@@ -13,11 +12,17 @@ import com.trendingstocks.Service.JsonEntity.ConstituentArray;
 import com.trendingstocks.Service.JsonEntity.JsonStock;
 import com.trendingstocks.Service.JsonEntity.SearchResult;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import okhttp3.Request;
 import okhttp3.Response;
@@ -120,5 +125,22 @@ public class JsonRequestImpl implements JsonRequest {
 
         Stock stock = new Stock(jstock.pc,jstock.c);
         return  stock;
+    }
+    public List<Company> getStartCompaniesFromJsonFile(AssetManager assetManager) throws FileNotFoundException, IllegalArgumentException {
+        String s;
+        try(InputStream is = assetManager.open("start_companies.json")){
+            Scanner scanner = new Scanner(is).useDelimiter("\\A");
+            s = scanner.hasNext() ? scanner.next() : "";
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FileNotFoundException("file" + assetManager + "doesn't exist!");
+        }
+        Gson gson = new Gson();
+        Company[] companies = gson.fromJson(s,Company[].class);
+
+        if (companies==null || companies.length ==0){
+            throw new IllegalArgumentException("file exist, but no companies in it");
+        }
+        return Arrays.asList(companies);
     }
 }

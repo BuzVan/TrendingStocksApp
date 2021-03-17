@@ -93,6 +93,8 @@ public class Company implements Serializable {
     }
 
     public Stock getStock() {
+        if (stock == null)
+            stock = new Stock();
         return stock;
     }
 

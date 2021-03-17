@@ -1,8 +1,11 @@
 package com.trendingstocks.Service.Interface;
 
+import android.content.res.AssetManager;
+
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.Entity.Stock;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,4 +40,13 @@ public interface JsonRequest {
      * @throws IOException ошибка, если ответ не получен
      */
     public Stock getStockByTicker(String ticker) throws IOException;
+
+    /**
+     * Открыть стартовые компании из JSON файла проекта
+     * @param assetManager ссылка на файл
+     * @return созданные компании
+     * @throws FileNotFoundException файл не найден
+     * @throws IllegalArgumentException файл существует, но получить список компаний не получилось
+     */
+    public List<Company> getStartCompaniesFromJsonFile(AssetManager assetManager) throws FileNotFoundException, IllegalArgumentException;
 }

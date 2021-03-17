@@ -35,6 +35,7 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
         tickerName.setText(company.getTicker());
         priceNow.setText(company.getStock().getCurrentPrice()+" " + company.getCurrency());
         priceChange.setText(company.getStock().getPriceChange() +" "+ company.getCurrency());
+
         companyName.setText(company.getName());
 
         if (company.getLogoUri() == null || company.getLogoUri().equals(""))
