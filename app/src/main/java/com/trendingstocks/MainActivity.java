@@ -11,43 +11,57 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.Entity.Stock;
+import com.trendingstocks.Service.ComplexPreferences.ComplexPreferences;
+import com.trendingstocks.Service.ComplexPreferences.ObjectPreference;
 import com.trendingstocks.Service.Interface.JsonRequest;
 import com.trendingstocks.Service.JsonRequestImpl;
 import com.trendingstocks.View.StockListView.CompanyListAdapter;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
+    String START_COMPANY_KEY = "START_COMPANY_KEY";
     RecyclerView companyRecyclerView;
     CompanyListAdapter companyListAdapter;
     JsonRequest jsonRequest;
+    ObjectPreference objectPreference;
 
     CompaniesLoadTask companiesLoadTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        objectPreference = (ObjectPreference) this.getApplication();
+
 
         jsonRequest = new JsonRequestImpl();
         companyRecyclerView =  findViewById(R.id.company_recycler_view);
-
-
         companyListAdapter = new CompanyListAdapter();
         companyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         companyRecyclerView.setAdapter(companyListAdapter);
 
-        companiesLoadTask = (CompaniesLoadTask) getLastCustomNonConfigurationInstance();
-        if (companiesLoadTask == null){
-            companiesLoadTask = new CompaniesLoadTask(this);
-            companiesLoadTask.execute();
-        }
-        else
-            companiesLoadTask.link(this);
 
+
+        Company[] data = objectPreference.getComplexPreference().getCompanies(START_COMPANY_KEY);
+        if (data != null){
+            companyListAdapter.companyList.addAll(Arrays.asList(data));
+            companyListAdapter.notifyDataSetChanged();
+        }
+        else{
+            companiesLoadTask = (CompaniesLoadTask) getLastCustomNonConfigurationInstance();
+            if (companiesLoadTask == null){
+                companiesLoadTask = new CompaniesLoadTask(this);
+                companiesLoadTask.execute();
+            }
+            else
+                companiesLoadTask.link(this);
+        }
     }
 
     @Override
@@ -143,18 +157,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        /*
         outState.putSerializable("company_list", companyListAdapter.companyList.toArray());
+        super.onSaveInstanceState(outState);
+         */
+        objectPreference.getComplexPreference().putCompanies(START_COMPANY_KEY, companyListAdapter.companyList.toArray());
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        /*
         Object[] companies  = (Object[]) savedInstanceState.getSerializable("company_list");
         for (Object item: companies){
             Company company = (Company) item;
             companyListAdapter.companyList.add(company);
         }
         companyListAdapter.notifyDataSetChanged();
+
+        if (companies == null || companies.length == null){
+
+        }
+         */
 
     }
 
