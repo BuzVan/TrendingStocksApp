@@ -31,7 +31,10 @@ public class CompanyListAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((CompanyListViewHolder)holder).bind(companyList.get(position));
+        if (companyList.size()>= position)
+            ((CompanyListViewHolder)holder).bind(companyList.get(position));
+        else
+            ((CompanyListViewHolder)holder).bind(companyList.get(companyList.size() - 1));
     }
 
     @Override

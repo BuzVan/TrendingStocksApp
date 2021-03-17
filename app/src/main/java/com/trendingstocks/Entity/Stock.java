@@ -19,7 +19,7 @@ public class Stock implements Serializable {
     }
 
     public  double getPriceChangePercent(){
-        return DoubleRounder.round(getPriceChange()/prevClosePrice,2);
+        return DoubleRounder.round(Math.abs(getPriceChange()/prevClosePrice),3);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.trendingstocks.Entity;
 
-import android.graphics.Bitmap;
-
 import com.trendingstocks.Service.Interface.JsonRequest;
 import com.trendingstocks.Service.JsonRequestImpl;
 
@@ -102,4 +100,13 @@ public class Company implements Serializable {
         this.stock = stock;
     }
 
+    public String getStringStock(){
+        return getStock().getCurrentPrice()+" " + getCurrency();
+    }
+    public String getStringChangeStock(){
+        String res = String.format("%s %s (%s%%)", getStock().getPriceChange(), getCurrency(), getStock().getPriceChangePercent());
+        if (getStock().getPriceChange()>0)
+            res = "+" + res;
+        return  res;
+    }
 }

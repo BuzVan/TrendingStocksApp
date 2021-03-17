@@ -1,8 +1,5 @@
 package com.trendingstocks.View.StockListView;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.R;
 
@@ -33,8 +29,24 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
     }
     public void bind(Company company){
         tickerName.setText(company.getTicker());
-        priceNow.setText(company.getStock().getCurrentPrice()+" " + company.getCurrency());
-        priceChange.setText(company.getStock().getPriceChange() +" "+ company.getCurrency());
+
+        //установка цвета акциям
+        if (company.getStock().getCurrentPrice() == 0) {
+            priceChange.setTextColor(itemView.getResources().getColor(R.color.gray_text));
+            priceNow.setTextColor(itemView.getResources().getColor(R.color.gray_text));
+        }
+        else if (company.getStock().getPriceChange()<0){
+            priceChange.setTextColor(itemView.getResources().getColor(R.color.red_text));
+            priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
+        }
+        else if (company.getStock().getPriceChange()>0){
+            priceChange.setTextColor(itemView.getResources().getColor(R.color.green_text));
+            priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
+        }
+
+        priceNow.setText(company.getStringStock());
+        priceChange.setText(company.getStringChangeStock());
+
 
         companyName.setText(company.getName());
 
