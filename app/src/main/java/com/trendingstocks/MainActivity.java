@@ -2,22 +2,23 @@ package com.trendingstocks;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.trendingstocks.Entity.Stock;
-import com.trendingstocks.View.StockListView.CompanyListAdapter;
 import com.trendingstocks.Entity.Company;
+import com.trendingstocks.Entity.Stock;
 import com.trendingstocks.Service.Interface.JsonRequest;
 import com.trendingstocks.Service.JsonRequestImpl;
+import com.trendingstocks.View.StockListView.CompanyListAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,24 +40,43 @@ public class MainActivity extends AppCompatActivity {
         companyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         companyRecyclerView.setAdapter(companyListAdapter);
 
-        if (savedInstanceState == null){
-
+        companiesLoadTask = (CompaniesLoadTask) getLastCustomNonConfigurationInstance();
+        if (companiesLoadTask == null){
             companiesLoadTask = new CompaniesLoadTask(this);
             companiesLoadTask.execute();
-
         }
+        else
+            companiesLoadTask.link(this);
+
     }
 
     @Override
     protected void onStop() {
-        if(companiesLoadTask!=null && !companiesLoadTask.isCancelled())
-            companiesLoadTask.cancel(false);
+        onRetainCustomNonConfigurationInstance();
         super.onStop();
     }
 
-    class CompaniesLoadTask extends AsyncTask<Integer, Integer, Void>{
+    @Nullable
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        if (companiesLoadTask!=null)
+            companiesLoadTask.unLink();
+        return companiesLoadTask;
+    }
+
+    static class CompaniesLoadTask extends AsyncTask<Integer, Company, Void>{
         private  MainActivity activity;
         private  int restarts = 0;
+
+        // получаем ссылку на MainActivity
+        void link(MainActivity act) {
+            activity = act;
+        }
+        // обнуляем ссылку
+        void unLink() {
+            activity = null;
+        }
+
         CompaniesLoadTask(MainActivity activity) {
             this.activity = activity;
         }
@@ -65,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Integer... values) {
             List<String> tickers = new ArrayList<>();
             try {
-                tickers = jsonRequest.getStartTickers();
+                tickers = activity.jsonRequest.getStartTickers();
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -73,34 +93,51 @@ public class MainActivity extends AppCompatActivity {
             catch (Exception e){
                 if (restarts<3){
                     restarts++;
+                    //возможно настиг лимит на 60 обращений в секунду.
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
                     doInBackground(values);
-                    return null;
                 }
-                else
-                    return null;
+                return null;
             }
             for (String ticker : tickers) {
-                if (isCancelled())
-                    break;
-
+                //возможно ссылка на MainActivity ещё не восстановлена
+                while (activity == null) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Company company = null;
                 try {
-                    company = jsonRequest.getCompany(ticker);
+                    company = activity.jsonRequest.getCompany(ticker);
+                    publishProgress(company);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (isCancelled())
-                    break;
-                companyListAdapter.companyList.add(company);
-                publishProgress(companyListAdapter.getItemCount() - 1);
             }
             return null;
         }
 
+        private List<Company> temp_company = new ArrayList<>();
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            activity.companyListAdapter.notifyItemInserted(values[0]);
+        protected void onProgressUpdate(Company... companies) {
+            if (activity == null){
+                temp_company.add(companies[0]);
+            }
+            else if (temp_company.size() >0){
+                activity.companyListAdapter.companyList.addAll(temp_company);
+                temp_company.clear();
+                activity.companyListAdapter.companyList.add(companies[0]);
+            }
+            else {
+                activity.companyListAdapter.companyList.add(companies[0]);
+                activity.companyListAdapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -119,34 +156,6 @@ public class MainActivity extends AppCompatActivity {
         }
         companyListAdapter.notifyDataSetChanged();
 
-        class PriceLoadTask extends AsyncTask<Void, Integer, Void>{
-            private  MainActivity activity;
-
-            PriceLoadTask(MainActivity activity) {
-                this.activity = activity;
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                for (int i=0;i<companyListAdapter.getItemCount();i++) {
-                    Company company = companyListAdapter.companyList.get(i);
-                    try {
-                        company.updateStock();
-                    } catch (IOException e) {
-                        company.setStock(new Stock());
-                    }
-                    publishProgress(i);
-                }
-                return null;
-            }
-
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-                companyListAdapter.notifyItemChanged(values[0]);
-            }
-        }
-        PriceLoadTask task = new PriceLoadTask(this);
-        task.execute();
     }
 
 }

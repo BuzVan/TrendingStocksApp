@@ -1,5 +1,7 @@
 package com.trendingstocks.View.StockListView;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.R;
 
@@ -34,21 +37,19 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
         priceChange.setText(company.getStock().getPriceChange() +" "+ company.getCurrency());
         companyName.setText(company.getName());
 
-
-        try{
-            if (company.getLogo() != null && !company.getLogo().equals(""))
+        if (company.getLogoUri() == null || company.getLogoUri().equals(""))
+            companyImageView.setImageResource(R.drawable.err_image);
+        else
+            try {
                 Picasso.with(itemView.getContext())
-                        .load(company.getLogo())
+                        .load(company.getLogoUri())
+                        .placeholder(R.drawable.load_image)
+                        .error(R.drawable.err_image)
                         .fit()
                         .into(companyImageView);
-            else{
+            }
+            catch (Exception e){
                 companyImageView.setImageResource(R.drawable.err_image);
             }
-        }
-        catch (Exception e){
-            companyImageView.setImageResource(R.drawable.err_image);
-            Log.e("COMPANY_HOLDER", "error in image on company " + company.getTicker());
-        }
-
     }
 }

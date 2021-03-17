@@ -2,7 +2,9 @@ package com.trendingstocks.Entity;
 
 import org.decimal4j.util.DoubleRounder;
 
-public class Stock {
+import java.io.Serializable;
+
+public class Stock implements Serializable {
     private double prevClosePrice = 0;
     private double currentPrice = 0;
 

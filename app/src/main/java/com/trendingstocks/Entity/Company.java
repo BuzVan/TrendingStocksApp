@@ -15,9 +15,9 @@ public class Company implements Serializable {
     private String currency;
     private String ticker;
     private String weburl;
-    private String logo;
-    private transient Stock stock = new Stock();
 
+    private String logo;
+    private Stock stock;
 
     public void updateStock() throws IOException {
         JsonRequest jsonRequest = new JsonRequestImpl();
@@ -84,11 +84,11 @@ public class Company implements Serializable {
         this.weburl = weburl;
     }
 
-    public String getLogo() {
+    public String getLogoUri() {
         return logo;
     }
 
-    public void setLogo(String logo) {
+    public void setLogoUri(String logo) {
         this.logo = logo;
     }
 

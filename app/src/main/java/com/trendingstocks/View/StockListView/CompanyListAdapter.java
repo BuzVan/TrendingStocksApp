@@ -13,8 +13,6 @@ import com.trendingstocks.R;
 import java.util.ArrayList;
 
 public class CompanyListAdapter extends RecyclerView.Adapter {
-    private static final int EVEN_TYPE=0;
-    private static final int ODD_TYPE=1;
 
     public ArrayList<Company> companyList = new ArrayList<>();
 
@@ -22,7 +20,7 @@ public class CompanyListAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        if (viewType == EVEN_TYPE)
+        if (viewType == 0)
             view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.gray_stock_item, parent, false);
         else
