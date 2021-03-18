@@ -2,9 +2,9 @@ package com.trendingstocks;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +19,200 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
+
+class CompaniesLoadTask {
+    static ComTask comTask;
+
+    public static void deleteLink(){
+        comTask.activity = null;
+    }
+
+    public static void destroyTask(){
+        if (comTask!= null){
+            deleteLink();
+            comTask.cancel(true);
+            comTask = null;
+        }
+    }
+
+    public static void startTask(com.trendingstocks.MainActivity activity){
+        if (comTask == null){
+            comTask = new ComTask(activity, ComTask.LauchType.CREATE);
+            comTask.execute();
+        }
+        else if (activity.companyListAdapter.getItemCount()==0){
+            destroyTask();
+            comTask = new ComTask(activity, ComTask.LauchType.CREATE);
+            comTask.execute();
+        }
+        else if (comTask.isCancelled()){
+            comTask = new ComTask(activity, ComTask.LauchType.UPDATE);
+        }
+        else if (comTask.activity != activity)
+            comTask.activity = activity;
+    }
+
+    static class ComTask extends AsyncTask<Void, Company, Void>{
+        enum LauchType{
+            CREATE,
+            UPDATE
+        }
+        private  MainActivity activity;
+        private final LauchType type;
+        private  int restarts = 0;
+
+        // получаем ссылку на MainActivity
+        void link(MainActivity act) {
+            activity = act;
+        }
+        // обнуляем ссылку
+        void unLink() {
+            activity = null;
+        }
+
+        ComTask(MainActivity activity, LauchType type) {
+            this.activity = activity;
+            this.type = type;
+
+        }
+
+        private MainActivity getActivity(){
+            while (activity == null) {
+                if (isCancelled())
+                    return null;
+                try {
+                    Thread.sleep(1000);
+                    Log.e("CompaniesLoadTask", "activity is null...wait");
+                } catch (InterruptedException e) {
+                    throw new IllegalStateException("Main activity is Null!!");
+                }
+            }
+            return activity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Log.w("CompaniesLoadTask", "start");
+            switch (type){
+                case CREATE: downloadCompanies(); break;
+                case UPDATE: updateCompanies(); break;
+            }
+            Log.w("CompaniesLoadTask", "finished");
+            return null;
+        }
+
+        private void updateCompanies() {
+            int max = getActivity().companyListAdapter.getItemCount();
+            Log.i("CompaniesLoadTask", "max = " +max);
+            for (int i =0;i<max;i++) {
+                try {
+                    if(isCancelled())
+                        return;
+                    Log.i("CompaniesLoadTask", "i = " + i);
+                    Company company = getActivity().companyListAdapter.companyList.get(i);
+                    company.updateStock();
+                    int finalI = i;
+                    getActivity().runOnUiThread(() -> {
+                                getActivity().companyListAdapter.companyList.remove(finalI);
+                                getActivity().companyListAdapter.companyList.add(finalI, company);
+                                getActivity().companyListAdapter.notifyItemChanged(finalI);
+                            }
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    i--;
+                }
+            }
+        }
+
+        private void downloadCompanies(){
+            //получаем данные из getActivity
+            List<Company> data = new ArrayList<>();
+
+            Company[] temp =  getActivity().objectPreference.getComplexPreference().getCompanies(getActivity().START_COMPANY_KEY);
+            if (temp != null  && temp.length> 0)
+                data.addAll(Arrays.asList(temp));
+                //не успешно
+            else {
+
+                try {
+                    //получаем данные из json файла
+                    data = getActivity().jsonRequest.getStartCompaniesFromJsonFile(getActivity().getAssets());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //ошибка. скачиваем по api
+                    downloadStartCompany();
+                    return;
+                }
+            }
+            //обновляем цены на акции
+            if (data.size()==0)
+                return;
+            if(isCancelled())
+                return;
+            getActivity().companyListAdapter.companyList = new ArrayList<>(data);
+            getActivity().runOnUiThread(() -> getActivity().companyListAdapter.notifyDataSetChanged());
+
+            updateCompanies();
+        }
+        private void downloadStartCompany(){
+
+            List<String> tickers = new ArrayList<>();
+            try {
+                tickers = getActivity().jsonRequest.getStartTickers();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            catch (Exception e){
+                //возможно превышен лимит обращений к api
+                if (restarts<3){
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
+                    restarts++;
+                    downloadStartCompany();
+                }
+                return;
+            }
+            if(isCancelled())
+                return;
+            getActivity().companyListAdapter.companyList.clear();
+            for (String ticker : tickers) {
+                if(isCancelled())
+                    return;
+                Company company = null;
+                try {
+                    company = getActivity().jsonRequest.getCompany(ticker);
+                    publishProgress(company);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        private final List<Company> temp_company = new ArrayList<>();
+
+        @Override
+        protected void onProgressUpdate(Company... companies) {
+            if (activity == null){
+                temp_company.add(companies[0]);
+            }
+            else if (temp_company.size() >0){
+                activity.companyListAdapter.companyList.addAll(temp_company);
+                temp_company.clear();
+                activity.companyListAdapter.companyList.add(companies[0]);
+                activity.companyListAdapter.notifyDataSetChanged();
+            }
+            else {
+                activity.companyListAdapter.companyList.add(companies[0]);
+                activity.companyListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+}
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,8 +223,6 @@ public class MainActivity extends AppCompatActivity {
     JsonRequest jsonRequest;
     ObjectPreference objectPreference;
 
-
-    CompaniesLoadTask companiesLoadTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,135 +237,25 @@ public class MainActivity extends AppCompatActivity {
         companyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         companyRecyclerView.setAdapter(companyListAdapter);
 
-
-        // ассинхронный поток для скачивания компаний
-        companiesLoadTask = (CompaniesLoadTask) getLastCustomNonConfigurationInstance();
-        if (companiesLoadTask == null){
-            companiesLoadTask = new CompaniesLoadTask(this);
-            companiesLoadTask.execute();
+        //восстановление данных
+        Company[] data = objectPreference.getComplexPreference().getCompanies(START_COMPANY_KEY);
+        if (data!= null && data.length>0){
+            companyListAdapter.companyList = new ArrayList<>(Arrays.asList(data));
+            companyListAdapter.notifyDataSetChanged();
         }
-        else
-            companiesLoadTask.link(this);
 
+
+        // ассинхронный поток для скачивания/обновления компаний
+        com.trendingstocks.CompaniesLoadTask.startTask(this);
     }
 
 
     @Override
     protected void onStop() {
-        onRetainCustomNonConfigurationInstance();
+        com.trendingstocks.CompaniesLoadTask.deleteLink();
         super.onStop();
     }
 
-    @Nullable
-    @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        if (companiesLoadTask!=null)
-            companiesLoadTask.unLink();
-        return companiesLoadTask;
-    }
-
-    static class CompaniesLoadTask extends AsyncTask<Void, Void, Void>{
-        private  MainActivity activity;
-        private  int restarts = 0;
-
-        // получаем ссылку на MainActivity
-        void link(MainActivity act) {
-            activity = act;
-        }
-        // обнуляем ссылку
-        void unLink() {
-            activity = null;
-        }
-
-        CompaniesLoadTask(MainActivity activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            //получаем данные из SharedPreferences
-            Company[] data = activity.objectPreference.getComplexPreference().getCompanies(activity.START_COMPANY_KEY);
-
-            if (data != null){
-                activity.companyListAdapter.companyList.addAll(Arrays.asList(data));
-                publishProgress();
-                for (Company company:data) {
-                    try {
-                        company.updateStock();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    publishProgress();
-                }
-            }
-            else{
-                try {
-                    //получаем данные из json файла
-                    List<Company> temp =  activity.jsonRequest.getStartCompaniesFromJsonFile(activity.getAssets());
-                    if (temp != null) {
-                        activity.companyListAdapter.companyList.addAll(temp);
-                        publishProgress();
-                    }
-                    for (Company company:temp) {
-                        company.updateStock();
-                        publishProgress();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    //ошибка. пробуем скачать по api
-                    downloadStartCompany();
-                }
-            }
-            return null;
-        }
-        private void downloadStartCompany(){
-            List<String> tickers = new ArrayList<>();
-            try {
-                tickers = activity.jsonRequest.getStartTickers();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            catch (Exception e){
-                if (restarts<3){
-                    restarts++;
-                    //возможно настиг лимит на 60 обращений в секунду.
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(500);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                    downloadStartCompany();
-                }
-                return;
-            }
-
-            for (String ticker : tickers) {
-                //возможно ссылка на MainActivity ещё не восстановлена
-                while (activity == null) {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Company company = null;
-                try {
-                    company = activity.jsonRequest.getCompany(ticker);
-                    activity.companyListAdapter.companyList.add(company);
-                    publishProgress();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        private List<Company> temp_company = new ArrayList<>();
-
-        @Override
-        protected void onProgressUpdate(Void... voids) {
-            activity.companyListAdapter.notifyDataSetChanged();
-        }
-    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -187,11 +268,5 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        Company[] data = objectPreference.getComplexPreference().getCompanies(START_COMPANY_KEY);
-        companyListAdapter.companyList.addAll(Arrays.asList(data));
-        companyListAdapter.notifyDataSetChanged();
-        super.onRestoreInstanceState(savedInstanceState);
-    }
 }
+

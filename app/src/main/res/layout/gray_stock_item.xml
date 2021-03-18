@@ -59,12 +59,18 @@
         app:layout_constraintStart_toEndOf="@+id/company_image_view"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/ticker_name"
-            style="@style/CardStockNameText"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ticker_name"
+                style="@style/CardStockNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/company_name"
@@ -72,6 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

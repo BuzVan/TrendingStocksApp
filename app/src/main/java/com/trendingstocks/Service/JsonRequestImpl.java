@@ -12,9 +12,7 @@ import com.trendingstocks.Service.JsonEntity.ConstituentArray;
 import com.trendingstocks.Service.JsonEntity.JsonStock;
 import com.trendingstocks.Service.JsonEntity.SearchResult;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,6 +26,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class JsonRequestImpl implements JsonRequest {
+
 
     private static final String BASE_URL = "https://finnhub.io/api/v1/";
     private static final String TOKEN = "c16sucn48v6ppg7f3es0";
@@ -60,6 +59,7 @@ public class JsonRequestImpl implements JsonRequest {
             }
 
         }
+        Log.i("JsonRequest", "download company search");
         return  answer;
     }
 
@@ -81,7 +81,7 @@ public class JsonRequestImpl implements JsonRequest {
         String json = response.body().string();
         Company company =  gson.fromJson(json,Company.class);
         company.setStock(getStockByTicker(company.getTicker()));
-        Log.i("JSON_REQUEST", company.toString());
+        Log.i("JsonRequest", "download company by ticker");
         return company;
     }
 
@@ -101,6 +101,7 @@ public class JsonRequestImpl implements JsonRequest {
         Gson gson = new Gson();
         ConstituentArray constituentArray
                 = gson.fromJson(response.body().string(), ConstituentArray.class);
+        Log.i("JsonRequest", "download start tickers");
         return  constituentArray.constituents;
     }
 
@@ -124,7 +125,9 @@ public class JsonRequestImpl implements JsonRequest {
                 = gson.fromJson(response.body().string(), JsonStock.class);
 
         Stock stock = new Stock(jstock.pc,jstock.c);
+        Log.i("JsonRequest", "download stock by ticker" + stock.toString());
         return  stock;
+
     }
     public List<Company> getStartCompaniesFromJsonFile(AssetManager assetManager) throws FileNotFoundException, IllegalArgumentException {
         String s;
@@ -141,6 +144,7 @@ public class JsonRequestImpl implements JsonRequest {
         if (companies==null || companies.length ==0){
             throw new IllegalArgumentException("file exist, but no companies in it");
         }
+        Log.i("JsonRequest", "load from json file");
         return Arrays.asList(companies);
     }
 }

@@ -13,7 +13,7 @@ public class Company implements Serializable {
     private String currency;
     private String ticker;
     private String weburl;
-
+    private Boolean favorite = false;
     private String logo;
     private Stock stock;
 
@@ -40,13 +40,7 @@ public class Company implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Company company = (Company) o;
-        return name.equals(company.name) &&
-                Objects.equals(country, company.country) &&
-                Objects.equals(currency, company.currency) &&
-                ticker.equals(company.ticker) &&
-                Objects.equals(weburl, company.weburl) &&
-                Objects.equals(logo, company.logo) &&
-                Objects.equals(stock, company.stock);
+        return ticker.equals(company.ticker);
     }
 
     @Override
@@ -108,5 +102,13 @@ public class Company implements Serializable {
         if (getStock().getPriceChange()>0)
             res = "+" + res;
         return  res;
+    }
+
+    public Boolean getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        this.favorite = favorite;
     }
 }
