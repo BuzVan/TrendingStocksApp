@@ -26,9 +26,10 @@ public class Company implements Serializable {
     public String toString() {
         return "Company{" +
                 "name='" + name + '\'' +
+                ", ticker='" + ticker + '\'' +
                 ", country='" + country + '\'' +
                 ", currency='" + currency + '\'' +
-                ", ticker='" + ticker + '\'' +
+                ", favorite='" + favorite + '\'' +
                 ", weburl='" + weburl + '\'' +
                 ", logo='" + logo + '\'' +
                 ", stock=" + stock +

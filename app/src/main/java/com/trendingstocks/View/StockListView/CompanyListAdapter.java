@@ -15,7 +15,6 @@ import java.util.ArrayList;
 public class CompanyListAdapter extends RecyclerView.Adapter {
 
     public ArrayList<Company> companyList = new ArrayList<>();
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -31,10 +30,22 @@ public class CompanyListAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        ((CompanyListViewHolder)holder).bind(companyList.get(position));
+        ((CompanyListViewHolder) holder).starButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Company company = companyList.get(position);
+                company.setFavorite(!company.getFavorite());
+                notifyItemChanged(position);
+            }
+        });
+        /*
         if (position>=0 && companyList.size()>= position)
             ((CompanyListViewHolder)holder).bind(companyList.get(position));
         else
             ((CompanyListViewHolder)holder).bind(companyList.get(companyList.size() - 1));
+
+         */
     }
 
     @Override

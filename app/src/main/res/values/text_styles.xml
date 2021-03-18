@@ -5,7 +5,7 @@
         <item name="android:textColor">@color/black_text</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">12sp</item>
-
+        <item name="lineHeight">16sp</item>
     </style>
 
 
@@ -25,6 +25,7 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="textAllCaps">true</item>
+        <item name="lineHeight">24sp</item>
     </style>
 
 </resources>

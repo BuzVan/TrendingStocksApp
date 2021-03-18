@@ -1,6 +1,7 @@
 package com.trendingstocks.View.StockListView;
 
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
     TextView priceChange;
     TextView tickerName;
     TextView companyName;
+    ImageButton starButton;
     public CompanyListViewHolder(@NonNull View itemView) {
         super(itemView);
 
@@ -25,8 +27,9 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
         priceChange = itemView.findViewById(R.id.price_change);
         tickerName = itemView.findViewById(R.id.ticker_name);
         companyName = itemView.findViewById(R.id.company_name);
-
+        starButton = itemView.findViewById(R.id.starButton);
     }
+
     public void bind(Company company){
         tickerName.setText(company.getTicker());
 
@@ -43,6 +46,11 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
             priceChange.setTextColor(itemView.getResources().getColor(R.color.green_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
         }
+        //установка цвета звезды
+        if (company.getFavorite())
+            starButton.setColorFilter(itemView.getResources().getColor(R.color.star_yellow));
+        else
+            starButton.setColorFilter(itemView.getResources().getColor(R.color.gray));
 
         priceNow.setText(company.getStringStock());
         priceChange.setText(company.getStringChangeStock());
