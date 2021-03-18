@@ -1,4 +1,4 @@
-package com.trendingstocks.Service.Interface;
+package com.trendingstocks.Service.FinnhubAPI.Interface;
 
 
 
@@ -14,14 +14,14 @@ public interface HttpService {
      * @param url - адрес страницы
      * @return - сформированный запрос
      */
-    public Request getSimpleRequest(String url);
+    Request getSimpleRequest(String url);
     /**
      * Метод формирует GET-запрос с параметрами
      * @param url - адрес страницы
      * @param params - список параметров
      * @return - сформированный запрос
      */
-    public Request getRequestWithParams(String url, Map<String, String>
+    Request getRequestWithParams(String url, Map<String, String>
             params);
     /**
      * Метод формирует ответ на GET-запрос
@@ -30,7 +30,7 @@ public interface HttpService {
      * @throws IOException - исключение, в случае если ответ не
     был получен
      */
-    public Response getSyncResponse(Request request) throws IOException;
+    Response getSyncResponse(Request request) throws IOException;
     
     
 }

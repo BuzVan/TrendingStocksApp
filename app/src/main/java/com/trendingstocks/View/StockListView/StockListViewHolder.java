@@ -12,14 +12,14 @@ import com.squareup.picasso.Picasso;
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.R;
 
-class CompanyListViewHolder extends RecyclerView.ViewHolder{
+class StockListViewHolder extends RecyclerView.ViewHolder{
     ImageView companyImageView;
     TextView priceNow;
     TextView priceChange;
     TextView tickerName;
     TextView companyName;
     ImageButton starButton;
-    public CompanyListViewHolder(@NonNull View itemView) {
+    public StockListViewHolder(@NonNull View itemView) {
         super(itemView);
 
         companyImageView = itemView.findViewById(R.id.company_image_view);
@@ -31,23 +31,23 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bind(Company company){
-        tickerName.setText(company.getTicker());
+        tickerName.setText(company.ticker);
 
         //установка цвета акциям
-        if (company.getStock().getCurrentPrice() == 0) {
+        if (company.stock.getCurrentPrice() == 0) {
             priceChange.setTextColor(itemView.getResources().getColor(R.color.gray_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.gray_text));
         }
-        else if (company.getStock().getPriceChange()<0){
+        else if (company.stock.getPriceChange()<0){
             priceChange.setTextColor(itemView.getResources().getColor(R.color.red_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
         }
-        else if (company.getStock().getPriceChange()>0){
+        else if (company.stock.getPriceChange()>0){
             priceChange.setTextColor(itemView.getResources().getColor(R.color.green_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
         }
         //установка цвета звезды
-        if (company.getFavorite())
+        if (company.favorite)
             starButton.setColorFilter(itemView.getResources().getColor(R.color.star_yellow));
         else
             starButton.setColorFilter(itemView.getResources().getColor(R.color.gray));
@@ -56,17 +56,18 @@ class CompanyListViewHolder extends RecyclerView.ViewHolder{
         priceChange.setText(company.getStringChangeStock());
 
 
-        companyName.setText(company.getName());
+        companyName.setText(company.name);
 
-        if (company.getLogoUri() == null || company.getLogoUri().equals(""))
+        if (company.logo == null || company.logo.equals(""))
             companyImageView.setImageResource(R.drawable.err_image);
         else
             try {
                 Picasso.with(itemView.getContext())
-                        .load(company.getLogoUri())
+                        .load(company.logo)
                         .placeholder(R.drawable.load_image)
                         .error(R.drawable.err_image)
                         .fit()
+                        .centerInside()
                         .into(companyImageView);
             }
             catch (Exception e){

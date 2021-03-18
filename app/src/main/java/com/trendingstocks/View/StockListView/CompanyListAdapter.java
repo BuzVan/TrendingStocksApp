@@ -9,50 +9,45 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.R;
+import com.trendingstocks.Service.App;
 
 import java.util.ArrayList;
 
-public class CompanyListAdapter extends RecyclerView.Adapter {
+public abstract class CompanyListAdapter extends RecyclerView.Adapter{
 
-    public ArrayList<Company> companyList = new ArrayList<>();
+    public ArrayList<Company> companyList;
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.company_stock_item, parent, false);
+        View constLayout = view.findViewById(R.id.stock_item_layout);
+
         if (viewType == 0)
-            view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.gray_stock_item, parent, false);
+            constLayout.setBackgroundResource(R.drawable.gray_card_shape);
         else
-            view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.white_stock_item, parent, false);
-        return  new CompanyListViewHolder(view);
+            constLayout.setBackgroundResource(R.drawable.white_card_shape);
+        return  new StockListViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((CompanyListViewHolder)holder).bind(companyList.get(position));
-        ((CompanyListViewHolder) holder).starButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Company company = companyList.get(position);
-                company.setFavorite(!company.getFavorite());
-                notifyItemChanged(position);
-            }
-        });
-        /*
-        if (position>=0 && companyList.size()>= position)
-            ((CompanyListViewHolder)holder).bind(companyList.get(position));
-        else
-            ((CompanyListViewHolder)holder).bind(companyList.get(companyList.size() - 1));
+        ((StockListViewHolder)holder).bind(companyList.get(position));
+        //событие нажатия на звезду
+        ((StockListViewHolder) holder).starButton.setOnClickListener(v -> {
+            Company company = companyList.get(position);
 
-         */
+            company.favorite = !company.favorite;
+             Thread tr = new Thread(() -> App.getInstance().getDatabase().companyDao().update(company));
+             tr.start();
+        });
     }
 
     @Override
     public int getItemCount() {
-       return companyList.size();
+        return companyList.size();
     }
     public int getItemViewType(int index){
-       return index%2;
+        return index%2;
     }
 }

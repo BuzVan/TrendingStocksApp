@@ -1,4 +1,4 @@
-package com.trendingstocks.Service.JsonEntity;
+package com.trendingstocks.Service.FinnhubAPI.JsonEntity;
 
 public class JsonStock {
     public double c;

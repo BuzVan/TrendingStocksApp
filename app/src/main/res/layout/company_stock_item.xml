@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
+    android:id="@+id/stock_item_layout"
     android:background="@drawable/gray_card_shape"
     android:filterTouchesWhenObscured="false">
 
@@ -50,11 +51,13 @@
         tools:srcCompat="@tools:sample/avatars"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
         app:layout_constraintStart_toEndOf="@+id/company_image_view"
         app:layout_constraintTop_toTopOf="parent">
 

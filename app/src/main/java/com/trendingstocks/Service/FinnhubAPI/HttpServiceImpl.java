@@ -1,6 +1,6 @@
-package com.trendingstocks.Service;
+package com.trendingstocks.Service.FinnhubAPI;
 
-import com.trendingstocks.Service.Interface.HttpService;
+import com.trendingstocks.Service.FinnhubAPI.Interface.HttpService;
 
 import java.io.IOException;
 import java.util.Map;
