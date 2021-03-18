@@ -30,7 +30,9 @@ android {
         unitTests.returnDefaultValues = true
     }
 }
-
+ext {
+    supportLibrary = "27.0.2"
+}
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -42,7 +44,7 @@ dependencies {
     implementation group: 'com.squareup.picasso', name: 'picasso', version: '2.5.2'
     implementation 'org.jetbrains:annotations:15.0'
     implementation group: 'org.decimal4j', name: 'decimal4j', version: '1.0.3'
-
+    implementation "com.android.support:design:${supportLibrary}"
     testImplementation 'junit:junit:4.+'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
