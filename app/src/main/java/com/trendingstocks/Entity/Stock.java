@@ -34,8 +34,15 @@ public class Stock implements Serializable {
         return prevClosePrice;
     }
 
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
     public double getCurrentPrice() {
         return currentPrice;
     }
 
+    public void setPrevClosePrice(double prevClosePrice) {
+        this.prevClosePrice = prevClosePrice;
+    }
 }

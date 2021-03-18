@@ -1,26 +1,21 @@
-package com.trendingstocks.Service;
+package com.trendingstocks.Service.FinnhubAPI;
 
-import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.Entity.Stock;
-import com.trendingstocks.Service.Interface.HttpService;
-import com.trendingstocks.Service.Interface.JsonRequest;
-import com.trendingstocks.Service.JsonEntity.ConstituentArray;
-import com.trendingstocks.Service.JsonEntity.JsonStock;
-import com.trendingstocks.Service.JsonEntity.SearchResult;
+import com.trendingstocks.Service.FinnhubAPI.Interface.HttpService;
+import com.trendingstocks.Service.FinnhubAPI.Interface.JsonRequest;
+import com.trendingstocks.Service.FinnhubAPI.JsonEntity.ConstituentArray;
+import com.trendingstocks.Service.FinnhubAPI.JsonEntity.JsonStock;
+import com.trendingstocks.Service.FinnhubAPI.JsonEntity.SearchResult;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import okhttp3.Request;
 import okhttp3.Response;
@@ -80,7 +75,7 @@ public class JsonRequestImpl implements JsonRequest {
 
         String json = response.body().string();
         Company company =  gson.fromJson(json,Company.class);
-        company.setStock(getStockByTicker(company.getTicker()));
+        company.setStock(getStockByTicker(company.ticker));
         Log.i("JsonRequest", "download company by ticker");
         return company;
     }
@@ -129,6 +124,7 @@ public class JsonRequestImpl implements JsonRequest {
         return  stock;
 
     }
+    /*
     public List<Company> getStartCompaniesFromJsonFile(AssetManager assetManager) throws FileNotFoundException, IllegalArgumentException {
         String s;
         try(InputStream is = assetManager.open("start_companies.json")){
@@ -147,4 +143,6 @@ public class JsonRequestImpl implements JsonRequest {
         Log.i("JsonRequest", "load from json file");
         return Arrays.asList(companies);
     }
+
+     */
 }

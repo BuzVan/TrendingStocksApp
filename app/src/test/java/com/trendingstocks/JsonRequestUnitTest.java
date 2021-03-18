@@ -2,7 +2,7 @@ package com.trendingstocks;
 
 import com.trendingstocks.Entity.Company;
 import com.trendingstocks.Entity.Stock;
-import com.trendingstocks.Service.JsonRequestImpl;
+import com.trendingstocks.Service.FinnhubAPI.JsonRequestImpl;
 
 import org.junit.Assert;
 import org.junit.Test;
