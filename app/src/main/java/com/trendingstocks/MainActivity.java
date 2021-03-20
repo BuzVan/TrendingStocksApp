@@ -1,10 +1,12 @@
 package com.trendingstocks;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -146,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager viewPager;
     JsonRequest jsonRequest;
+    SearchView searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,6 +162,18 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.view_pager);
         setupViewPager(viewPager);
+
+        searchView = findViewById(R.id.search_view);
+
+        searchView.setOnClickListener(v -> {
+            Intent searchAct = new Intent(MainActivity.this, SearchActivity.class);
+            startActivity(searchAct);
+        });
+        searchView.setOnSearchClickListener(v -> {
+            Intent searchAct = new Intent(MainActivity.this, SearchActivity.class);
+            searchView.onActionViewCollapsed();
+            startActivity(searchAct);
+        });
     }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());

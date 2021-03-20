@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="SearchViewStyle" parent="Widget.MaterialComponents.TimePicker.Display.TextInputEditText">
+        <item name="background">@drawable/gray_card_shape</item>
+    </style>
 </resources>
