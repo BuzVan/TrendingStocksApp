@@ -27,7 +27,7 @@ public class JsonRequestImpl implements JsonRequest {
     private static final String TOKEN = "c16sucn48v6ppg7f3es0";
 
     @Override
-    public List<Company> getCompanySearch(String find) throws IOException {
+    public List<String> getTickersCompanySearch(String find) throws IOException {
         HttpService httpService = new HttpServiceImpl();
         String url = BASE_URL + "search";
         Map<String, String> map = new HashMap<String, String>();
@@ -43,19 +43,19 @@ public class JsonRequestImpl implements JsonRequest {
 
         String json = response.body().string();
         SearchResult searchResult = gson.fromJson(json, SearchResult.class);
-
-        List<Company> answer = new ArrayList<>();
+        List<String> result = new ArrayList<>();
+        if (searchResult == null || searchResult.result == null || searchResult.result.size() == 0)
+            return  result;
         for (SearchResult.JsonSymbol item: searchResult.result) {
             if (item.type.equals("Common Stock")){
-                Company current = getCompany(item.symbol);
-                if (!answer.contains(current))
-                    answer.add(current);
+                String current = item.symbol;
+                if (!result.contains(current))
+                    result.add(current);
 
             }
-
         }
         Log.i("JsonRequest", "download company search");
-        return  answer;
+        return result;
     }
 
     @Override

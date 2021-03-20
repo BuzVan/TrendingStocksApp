@@ -29,7 +29,7 @@ public class JsonRequestUnitTest {
     @Test
     public void SearchResult_ReturnGoodAnswer() throws Exception {
         JsonRequestImpl jsonRequest = new JsonRequestImpl();
-        List<Company> companies = jsonRequest.getCompanySearch("yandex");
+        List<Company> companies = jsonRequest.getTickersCompanySearch("yandex");
         Assert.assertNotEquals(null, companies);
         for( Company company: companies){
             System.out.println(company);

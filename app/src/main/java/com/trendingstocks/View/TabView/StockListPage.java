@@ -23,7 +23,7 @@ public class StockListPage extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.stocklist_view, container,false);
+        View view = inflater.inflate(R.layout.stock_list_view, container,false);
 
         return view;
     }

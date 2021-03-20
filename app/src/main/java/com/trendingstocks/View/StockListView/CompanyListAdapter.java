@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public abstract class CompanyListAdapter extends RecyclerView.Adapter{
 
-    public ArrayList<Company> companyList;
+    public ArrayList<Company> companyList = new ArrayList<>();
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -37,7 +37,7 @@ public abstract class CompanyListAdapter extends RecyclerView.Adapter{
         ((StockListViewHolder) holder).starButton.setOnClickListener(v -> {
             Company company = companyList.get(position);
 
-            company.favorite = !company.favorite;
+            company.isFavorite = !company.isFavorite;
              Thread tr = new Thread(() -> App.getInstance().getDatabase().companyDao().update(company));
              tr.start();
         });

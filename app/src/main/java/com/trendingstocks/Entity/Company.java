@@ -22,8 +22,10 @@ public class Company implements Serializable {
     public String country;
     public String currency;
     public String weburl;
-    public Boolean favorite = false;
+    public Boolean isFavorite = false;
     public String logo;
+    public Boolean isSearchResult = false;
+
     @Embedded
     public Stock stock;
     public Company(){
@@ -42,7 +44,7 @@ public class Company implements Serializable {
                 ", ticker='" + ticker + '\'' +
                 ", country='" + country + '\'' +
                 ", currency='" + currency + '\'' +
-                ", favorite='" + favorite + '\'' +
+                ", favorite='" + isFavorite + '\'' +
                 ", weburl='" + weburl + '\'' +
                 ", logo='" + logo + '\'' +
                 ", stock=" + stock +
@@ -66,7 +68,7 @@ public class Company implements Serializable {
     }
 
     public String getStringStock(){
-        return stock.getCurrentPrice()+" " + currency;
+        return stock.currentPrice+" " + currency;
     }
     public String getStringChangeStock(){
         String res = String.format("%s %s (%s%%)", stock.getPriceChange(), currency, stock.getPriceChangePercent());
