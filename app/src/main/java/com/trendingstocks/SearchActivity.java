@@ -98,8 +98,15 @@ public class SearchActivity extends AppCompatActivity {
                                 if (company.ticker == null)
                                     continue;
                             }
-                            company.isSearchResult = true;
-                            App.getInstance().getDatabase().companyDao().insert(company);
+                            Company company1 = App.getInstance().getDatabase().companyDao().getByTicker(company.ticker);
+                            if (company1 == null){
+                                company.isSearchResult = true;
+                                App.getInstance().getDatabase().companyDao().insert(company);
+                            }
+                            else{
+                                company1.isSearchResult =true;
+                                App.getInstance().getDatabase().companyDao().update(company1);
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -110,6 +117,7 @@ public class SearchActivity extends AppCompatActivity {
             }
 
         });
+
     }
 
 }

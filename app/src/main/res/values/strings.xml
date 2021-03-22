@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">TrendingStocksApp</string>
     <string name="text_example">TextView</string>
-    <string name="search_info">Find company or ticker</string>
+    <string name="search_text">Find company or ticker</string>
 </resources>

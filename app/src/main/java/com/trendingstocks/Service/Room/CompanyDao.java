@@ -15,29 +15,29 @@ import io.reactivex.Flowable;
 
 @Dao
 public  interface CompanyDao {
-    @Query("SELECT * FROM Company ORDER BY currentPrice DESC ")
+    @Query("SELECT * FROM Company ORDER BY ticker ")
     List<Company> getAll();
 
-    @Query("SELECT * FROM Company ORDER BY currentPrice DESC")
+    @Query("SELECT * FROM Company ORDER BY ticker")
     Flowable<List<Company>> getAllFlowable();
 
-    @Query("SELECT COUNT (*) FROM Company ORDER BY currentPrice DESC")
+    @Query("SELECT COUNT (*) FROM Company ORDER BY ticker")
     int getCountCompany();
 
     @Query("SELECT * FROM Company WHERE ticker =:ticker")
     Company getByTicker(String ticker);
 
-    @Query("SELECT * FROM Company WHERE isFavorite =:isFavorite ORDER BY currentPrice DESC")
+    @Query("SELECT * FROM Company WHERE isFavorite =:isFavorite ORDER BY ticker")
     List<Company> getAll(boolean isFavorite);
 
-    @Query("SELECT * FROM Company WHERE isFavorite =:isFavorite ORDER BY currentPrice DESC")
+    @Query("SELECT * FROM Company WHERE isFavorite =:isFavorite ORDER BY ticker")
     Flowable<List<Company>>  getAllFlowable(boolean isFavorite);
 
 
-    @Query("SELECT * FROM Company WHERE isSearchResult = 1 ORDER BY currentPrice DESC")
+    @Query("SELECT * FROM Company WHERE isSearchResult = 1 ORDER BY ticker")
     List<Company> getAllSearch();
 
-    @Query("SELECT * FROM Company WHERE isSearchResult = 1 ORDER BY currentPrice DESC")
+    @Query("SELECT * FROM Company WHERE isSearchResult = 1 ORDER BY ticker")
     Flowable<List<Company>> getAllSearchFlowable();
 
     @Query("UPDATE Company SET isSearchResult = 0 WHERE isSearchResult = 1 AND isFavorite = 1")

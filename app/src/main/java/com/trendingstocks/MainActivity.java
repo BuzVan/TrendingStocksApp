@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         searchView.setOnClickListener(v -> {
             Intent searchAct = new Intent(MainActivity.this, SearchActivity.class);
+            searchView.onActionViewCollapsed();
             startActivity(searchAct);
         });
         searchView.setOnSearchClickListener(v -> {
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(searchAct);
         });
     }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new StockListPage(), "Stocks");
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         static class UpdateCompanyTask extends AsyncTask<Void, Pair<Integer, Company>, Void> {
 
             private MainActivity activity;
-            private int restarts = 0;
+            private final int restarts = 0;
 
             UpdateCompanyTask(MainActivity activity) {
                 this.activity = activity;
@@ -134,66 +136,62 @@ public class MainActivity extends AppCompatActivity {
                 App.getInstance().getDatabase().companyDao().saveFavoriteSearch();
                 App.getInstance().getDatabase().companyDao().deleteNonFavoriteSearch();
 
-                List<Company> companies = App.getInstance().getDatabase().companyDao().getAll();
-                Log.i(LOG_TAG, "count Company = " + companies.size());
-                if (companies.size() > 0){
-                    for (Company company:
-                            companies) {
-                        try {
-                            company.updateStock();
-                            Log.i(LOG_TAG, "update Company = " + company);
-                            App.getInstance().getDatabase().companyDao().setStock(company.ticker, company.stock.prevClosePrice, company.stock.currentPrice);
-                            company = App.getInstance().getDatabase().companyDao().getByTicker(company.ticker);
-                            Log.i(LOG_TAG, "Company = " + company);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                else {
-                    downloadStartCompany();
-                }
+                updateStocks();
+                downloadStartCompany();
 
                 Log.w(LOG_TAG, "finished");
                 return null;
             }
 
-
             private void downloadStartCompany() {
-
                 List<String> tickers = new ArrayList<>();
                 try {
                     tickers = getActivity().jsonRequest.getStartTickers();
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (Exception e) {
-                    //возможно превышен лимит обращений к api
-                    if (restarts < 3) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException interruptedException) {
-                            interruptedException.printStackTrace();
-                        }
-                        restarts++;
-                        downloadStartCompany();
-                    }
-                    return;
                 }
-                if (isCancelled())
+                if (tickers == null)
                     return;
 
-                for (String ticker : tickers) {
+                for (String ticker: tickers
+                     ) {
                     if (isCancelled())
                         return;
-                    Company company = null;
+                    Company company = App.getInstance().getDatabase().companyDao().getByTicker(ticker);
+                    if (company == null) {
+                        try {
+                            company = getActivity().jsonRequest.getCompany(ticker);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            continue;
+                        }
+                        Company company1 = App.getInstance().getDatabase().companyDao().getByTicker(company.ticker);
+                        if (company1 == null)
+                            App.getInstance().getDatabase().companyDao().insert(company);
+                        else
+                            App.getInstance().getDatabase().companyDao().setStock(company.ticker, company.stock.prevClosePrice, company.stock.currentPrice);
+                    }
+                }
+            }
+
+            private void updateStocks() {
+                List<Company> companies = App.getInstance().getDatabase().companyDao().getAll();
+                Log.i(LOG_TAG, "count Company = " + companies.size());
+
+                for (Company company:
+                        companies) {
                     try {
-                        company = getActivity().jsonRequest.getCompany(ticker);
-                        App.getInstance().getDatabase().companyDao().insert(company);
+                        if (isCancelled())
+                            return;
+                        company.updateStock();
+                        Log.i(LOG_TAG, "update Company = " + company);
+                        App.getInstance().getDatabase().companyDao().setStock(company.ticker, company.stock.prevClosePrice, company.stock.currentPrice);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
+
         }
     }
 
