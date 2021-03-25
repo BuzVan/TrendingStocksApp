@@ -1,7 +1,6 @@
 package com.trendingstocks.View.TabView;
 
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +20,6 @@ import java.util.ArrayList;
 
 public class FavoriteListPage extends Fragment {
 
-
-    RecyclerView companyRecyclerView;
-    FavorCompanyListAdapter favorCompanyListAdapter;
-
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -38,26 +31,13 @@ public class FavoriteListPage extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        RecyclerView favorRecyclerView = getActivity().findViewById(R.id.favorite_recycler_view);
+        FavorCompanyListAdapter favorCompanyListAdapter = new FavorCompanyListAdapter();
+        favorRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        favorRecyclerView.setAdapter(favorCompanyListAdapter);
 
-        companyRecyclerView = getActivity().findViewById(R.id.favorite_recycler_view);
-        favorCompanyListAdapter = new FavorCompanyListAdapter();
-        companyRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        companyRecyclerView.setAdapter(favorCompanyListAdapter);
-
-         new AsyncTask() {
-            @Override
-            protected Void doInBackground(Object[] objects) {
-                favorCompanyListAdapter.companyList = new ArrayList<>(App.getInstance().getDatabase().companyDao().getAll(true));
-                return  null;
-            }
-
-             @Override
-             protected void onPostExecute(Object o) {
-                 favorCompanyListAdapter.notifyDataSetChanged();
-             }
-         }.execute();
         //добавление данных в recyclerView
-
+        new Thread(() -> favorCompanyListAdapter.companyList = new ArrayList<>(App.getInstance().getDatabase().companyDao().getAll(true))).start();
 
     }
 

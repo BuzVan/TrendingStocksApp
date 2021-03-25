@@ -5,8 +5,8 @@ import org.decimal4j.util.DoubleRounder;
 import java.io.Serializable;
 
 public class Stock implements Serializable {
-    private double prevClosePrice = 0;
-    private double currentPrice = 0;
+    public double prevClosePrice = 0;
+    public double currentPrice = 0;
 
     public Stock(){}
     public Stock(double prevClosePrice, double currentPrice) {
@@ -28,21 +28,5 @@ public class Stock implements Serializable {
                 "PrevClosePrice=" + prevClosePrice +
                 ", CurrentPrice=" + currentPrice +
                 '}';
-    }
-
-    public double getPrevClosePrice() {
-        return prevClosePrice;
-    }
-
-    public void setCurrentPrice(double currentPrice) {
-        this.currentPrice = currentPrice;
-    }
-
-    public double getCurrentPrice() {
-        return currentPrice;
-    }
-
-    public void setPrevClosePrice(double prevClosePrice) {
-        this.prevClosePrice = prevClosePrice;
     }
 }

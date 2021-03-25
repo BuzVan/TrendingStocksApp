@@ -24,12 +24,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+
         database = Room.databaseBuilder(
                 this, AppDatabase.class, "database")
-            .build();
-        android.util.Log.i(TAG, "Preference Created.");
-
-
+                .build();
     }
 
 

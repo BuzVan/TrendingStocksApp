@@ -20,7 +20,6 @@
         <item name="android:textColor">@color/gray_text</item>
     </style>
 
-
     <style name="CardStockNameText" parent="DefaultText">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>

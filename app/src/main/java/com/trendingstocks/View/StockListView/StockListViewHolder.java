@@ -34,7 +34,7 @@ class StockListViewHolder extends RecyclerView.ViewHolder{
         tickerName.setText(company.ticker);
 
         //установка цвета акциям
-        if (company.stock.getCurrentPrice() == 0) {
+        if (company.stock.currentPrice == 0) {
             priceChange.setTextColor(itemView.getResources().getColor(R.color.gray_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.gray_text));
         }
@@ -47,7 +47,7 @@ class StockListViewHolder extends RecyclerView.ViewHolder{
             priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
         }
         //установка цвета звезды
-        if (company.favorite)
+        if (company.isFavorite)
             starButton.setColorFilter(itemView.getResources().getColor(R.color.star_yellow));
         else
             starButton.setColorFilter(itemView.getResources().getColor(R.color.gray));

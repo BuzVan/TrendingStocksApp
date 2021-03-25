@@ -13,7 +13,7 @@ public interface JsonRequest {
      * @return список компаний Company
      * @throws IOException ошибка, если ответ не получен
      */
-    List<Company> getCompanySearch(String find) throws IOException;
+    List<String> getTickersCompanySearch(String find) throws IOException;
 
     /**
      * получить компанию по её тикеру
