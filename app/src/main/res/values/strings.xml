@@ -2,4 +2,7 @@
     <string name="app_name">TrendingStocksApp</string>
     <string name="text_example">TextView</string>
     <string name="search_text">Find company or ticker</string>
+    <string name="all_time">All</string>
+    <string name="last_y">Last Y</string>
+    <string name="last_m">Last M</string>
 </resources>

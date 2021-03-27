@@ -10,9 +10,11 @@ import com.trendingstocks.Service.FinnhubAPI.Interface.JsonRequest;
 import com.trendingstocks.Service.FinnhubAPI.JsonEntity.ConstituentArray;
 import com.trendingstocks.Service.FinnhubAPI.JsonEntity.JsonStock;
 import com.trendingstocks.Service.FinnhubAPI.JsonEntity.SearchResult;
+import com.trendingstocks.Service.FinnhubAPI.JsonEntity.StockCandles;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,14 +118,63 @@ public class JsonRequestImpl implements JsonRequest {
             throw new IOException("no answer from finnhub");
 
         Gson gson = new Gson();
-        JsonStock jstock
+        JsonStock jsonStock
                 = gson.fromJson(response.body().string(), JsonStock.class);
-
-        Stock stock = new Stock(jstock.pc,jstock.c);
+        if (jsonStock == null)
+            return new Stock();
+        Stock stock = new Stock(jsonStock.pc, jsonStock.c);
         Log.i("JsonRequest", "download stock by ticker" + stock.toString());
-        return  stock;
+        return stock;
 
     }
+
+    @Override
+    public StockCandles getStockCandlesAllTimeByMonth(String ticker) throws IOException {
+        return getStockCandles(ticker, "0", "M");
+    }
+
+    @Override
+    public StockCandles getStockCandlesLastYearByWeek(String ticker) throws IOException {
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.YEAR, -1);
+        return getStockCandles(ticker, now.getTimeInMillis() / 1000 + "", "W");
+    }
+
+    @Override
+    public StockCandles getStockCandlesLastMonthByDays(String ticker) throws IOException {
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.MONTH, -1);
+        return getStockCandles(ticker, now.getTimeInMillis() / 1000 + "", "D");
+    }
+
+
+    private StockCandles getStockCandles(String ticker, String from, String resolution) throws IOException {
+
+        HttpService httpService = new HttpServiceImpl();
+        String url = BASE_URL + "stock/candle";
+        Map<String, String> map = new HashMap<>();
+        map.put("symbol", ticker);
+        map.put("token", TOKEN);
+        map.put("resolution", resolution);
+        map.put("from", from);
+
+        long now_unix = Calendar.getInstance().getTimeInMillis() / 1000;
+        map.put("to", now_unix + "");
+
+        Request request = httpService.getRequestWithParams(url, map);
+        Response response = httpService.getSyncResponse(request);
+
+        Gson gson = new Gson();
+
+        if (response.body() == null)
+            throw new IOException("no answer from finnhub");
+
+        String json = response.body().string();
+        StockCandles stockCandles = gson.fromJson(json, StockCandles.class);
+        Log.i("JsonRequest", "download stock candles");
+        return stockCandles;
+    }
+
     /*
     public List<Company> getStartCompaniesFromJsonFile(AssetManager assetManager) throws FileNotFoundException, IllegalArgumentException {
         String s;
