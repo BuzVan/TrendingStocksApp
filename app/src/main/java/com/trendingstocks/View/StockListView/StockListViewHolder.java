@@ -23,8 +23,8 @@ class StockListViewHolder extends RecyclerView.ViewHolder{
         super(itemView);
 
         companyImageView = itemView.findViewById(R.id.company_image_view);
-        priceNow = itemView.findViewById(R.id.price_now);
-        priceChange = itemView.findViewById(R.id.price_change);
+        priceNow = itemView.findViewById(R.id.companyInfoPriceNow);
+        priceChange = itemView.findViewById(R.id.companyInfoPriceChange);
         tickerName = itemView.findViewById(R.id.ticker_name);
         companyName = itemView.findViewById(R.id.company_name);
         starButton = itemView.findViewById(R.id.starButton);
@@ -37,23 +37,20 @@ class StockListViewHolder extends RecyclerView.ViewHolder{
         if (company.stock.currentPrice == 0) {
             priceChange.setTextColor(itemView.getResources().getColor(R.color.gray_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.gray_text));
-        }
-        else if (company.stock.getPriceChange()<0){
+        } else if (company.stock.getPriceChange() < 0) {
             priceChange.setTextColor(itemView.getResources().getColor(R.color.red_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
-        }
-        else if (company.stock.getPriceChange()>0){
+        } else if (company.stock.getPriceChange() > 0) {
             priceChange.setTextColor(itemView.getResources().getColor(R.color.green_text));
             priceNow.setTextColor(itemView.getResources().getColor(R.color.black_text));
         }
+        priceNow.setText(company.getStringStock());
+        priceChange.setText(company.getStringChangeStock());
         //установка цвета звезды
         if (company.isFavorite)
             starButton.setColorFilter(itemView.getResources().getColor(R.color.star_yellow));
         else
             starButton.setColorFilter(itemView.getResources().getColor(R.color.gray));
-
-        priceNow.setText(company.getStringStock());
-        priceChange.setText(company.getStringChangeStock());
 
 
         companyName.setText(company.name);
@@ -62,7 +59,7 @@ class StockListViewHolder extends RecyclerView.ViewHolder{
             companyImageView.setImageResource(R.drawable.err_image);
         else
             try {
-                Picasso.with(itemView.getContext())
+                Picasso.get()
                         .load(company.logo)
                         .placeholder(R.drawable.load_image)
                         .error(R.drawable.err_image)

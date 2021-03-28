@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         jsonRequest = new JsonRequestImpl();
 
         viewPager = findViewById(R.id.view_pager);
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     if (isCancelled())
                         return null;
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                         Log.e(LOG_TAG, "activity is null...wait");
                     } catch (InterruptedException e) {
                         throw new IllegalStateException("Main activity is Null!!");
